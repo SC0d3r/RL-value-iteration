@@ -1,8 +1,9 @@
 import { sizeOfGrid, getCellValue, isValueBlock } from "../logic";
 import styles from "./GridTable.module.css";
-import { Grid, Typography } from "@material-ui/core";
+import { Grid, isWidthDown, Typography, withWidth } from "@material-ui/core";
 
-function GridTable({ grid, justify = "flex-start" }) {
+function GridTable({ grid, justify = "flex-start", width }) {
+  console.log(width);
   return (
     <Grid
       container
@@ -13,6 +14,7 @@ function GridTable({ grid, justify = "flex-start" }) {
     >
       {grid.map((x) => (
         <Grid
+          style={{ width: isWidthDown("xs", width) ? "fit-content" : "none" }}
           key={Math.random()}
           item
           container
@@ -61,4 +63,4 @@ function hasTwoZeroDecimals(x) {
   z = z.split(".")[1];
   return z[0] === "0" && z[1] === "0";
 }
-export default GridTable;
+export default withWidth()(GridTable);

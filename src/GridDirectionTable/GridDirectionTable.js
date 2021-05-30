@@ -5,22 +5,25 @@ import {
   isTerminalState,
 } from "../logic";
 import styles from "./GridDirectionTable.module.css";
-import { Grid, Typography } from "@material-ui/core";
+import { Grid, isWidthDown, Typography, withWidth } from "@material-ui/core";
 
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import CheckIcon from "@material-ui/icons/Check";
 
-function GridDirectionTable({ grid, justify = "flex-start" }) {
+function GridDirectionTable({ grid, justify = "flex-start", width }) {
   return (
     <Grid
       container
       item
-      alignItems="center"
+      // alignItems="center"
       justify="center"
-      style={{ padding: "2rem" }}
+      style={{
+        padding: "2rem",
+      }}
     >
       {grid.map((x, i) => (
         <Grid
+          style={{ width: isWidthDown("xs", width) ? "fit-content" : "none" }}
           key={Math.random()}
           item
           container
@@ -84,4 +87,4 @@ function GridDirectionTable({ grid, justify = "flex-start" }) {
   );
 }
 
-export default GridDirectionTable;
+export default withWidth()(GridDirectionTable);

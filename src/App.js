@@ -112,7 +112,14 @@ function App() {
           </Grid>
         </Grid>
 
-        <Grid item container alignItems="center" justify="center" spacing={2}>
+        <Grid
+          item
+          container
+          alignItems="center"
+          justify="center"
+          spacing={2}
+          style={{ paddingBottom: "1vw" }}
+        >
           <Grid item>
             <TextField
               type="number"
