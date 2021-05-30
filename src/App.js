@@ -55,7 +55,7 @@ function App() {
                 </Button>
               }
             >
-              You cant double click on a cell to create/destory a block cell
+              You can double click on a cell to create/destory a block cell
             </Alert>
           </Grid>
         )}
@@ -173,6 +173,21 @@ function App() {
           spacing={2}
           style={{ paddingBottom: "1vw" }}
         >
+          {step > 1 && (
+            <Grid item style={{ position: "relative", marginTop: "-1px" }}>
+              <Button
+                style={{ height: "39px" }}
+                variant="contained"
+                // color="secondary"
+                onClick={(e) => {
+                  setGrid(defaultGrid);
+                  setStep(1);
+                }}
+              >
+                Rest
+              </Button>
+            </Grid>
+          )}
           <Grid item>
             <TextField
               type="number"
