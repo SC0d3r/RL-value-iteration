@@ -1,29 +1,70 @@
 import logo from "./logo.svg";
 import "./App.css";
 import React, { useState } from "react";
-import { addBlock, addTerminalState, algorithm, makeGrid } from "./logic";
+import {
+  addBlock,
+  addTerminalState,
+  algorithm,
+  makeGrid,
+  isBlock,
+  updateCellValue,
+} from "./logic";
 import { Button, Grid, TextField, Typography } from "@material-ui/core";
 import GridTable from "./GridTable";
 import GridDirectionTable from "./GridDirectionTable";
+
+import { makeStyles } from "@material-ui/core/styles";
+import Alert from "@material-ui/lab/Alert";
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    width: "100%",
+    "& > * + *": {
+      marginTop: theme.spacing(2),
+    },
+  },
+}));
+
 function App() {
   let defaultgrid = makeGrid(3, 4);
   defaultgrid = addBlock(1, 1, defaultgrid);
   defaultgrid = addTerminalState(0, 3, 1, defaultgrid);
   defaultgrid = addTerminalState(1, 3, -1, defaultgrid);
 
+  const [defaultGrid, setDefaultGrid] = useState(defaultgrid);
   const [R, setR] = useState(0);
   const [gamma, setgamma] = useState(0.9);
   const [step, setStep] = useState(1);
-  const [grid, setGrid] = useState(defaultgrid);
+  const [grid, setGrid] = useState(defaultGrid);
+  const [isAlertOn, setIsAlertOn] = useState(true);
 
   return (
     <div className="app">
       <Grid container>
+        {isAlertOn && (
+          <Grid item xs={12}>
+            <Alert
+              severity="success"
+              action={
+                <Button
+                  color="inherit"
+                  size="small"
+                  onClick={(e) => setIsAlertOn(false)}
+                >
+                  X
+                </Button>
+              }
+            >
+              You cant double click on a cell to create/destory a block cell
+            </Alert>
+          </Grid>
+        )}
         <Grid item xs={12}>
           <Typography
             component="h1"
             style={{
               padding: "2rem",
+              paddingTop: isAlertOn ? "0.5rem" : "2rem",
               textAlign: "center",
               fontSize: "calc(1.4rem + 12px)",
             }}
@@ -54,7 +95,7 @@ function App() {
               <TextField
                 onChange={(e) => {
                   setStep(1);
-                  setGrid(defaultgrid);
+                  setGrid(defaultGrid);
                   // const x = +e.target.value;
                   // setR(isNaN(x) ? 0 : x);
                   setR(e.target.value);
@@ -84,7 +125,7 @@ function App() {
                 onChange={(e) => {
                   setgamma((x) => Math.max(0, Math.min(1, +e.target.value)));
                   setStep(1);
-                  setGrid(defaultgrid);
+                  setGrid(defaultGrid);
                 }}
                 style={{ width: "80px" }}
                 variant="outlined"
@@ -105,7 +146,15 @@ function App() {
           }}
         >
           <Grid item xs={12} md={6} sm={6} style={{}}>
-            <GridTable justify="flex-end" grid={grid} />
+            <GridTable
+              onDoubleClickCell={(i, j) => {
+                setStep(1);
+                // setGrid(defaultGrid);
+                onDblClickOnCell(i, j, defaultGrid, setDefaultGrid, setGrid);
+              }}
+              justify="flex-end"
+              grid={grid}
+            />
           </Grid>
           <Grid item xs={12} md={6} sm={6}>
             <GridDirectionTable grid={grid} />
@@ -126,7 +175,7 @@ function App() {
               value={step}
               onChange={(e) => {
                 setStep(+e.target.value);
-                setGrid(defaultgrid);
+                setGrid(defaultGrid);
               }}
               variant="outlined"
               margin="dense"
@@ -142,7 +191,7 @@ function App() {
                 const reward = isNaN(+R) ? 0 : +R;
                 if (isNaN(+R)) alert("Reward is not a valid number");
 
-                setGrid(algorithm(defaultgrid, step, reward, gamma));
+                setGrid(algorithm(defaultGrid, step, reward, gamma));
                 setStep((x) => x + 1);
               }}
             >
@@ -156,3 +205,12 @@ function App() {
 }
 
 export default App;
+function onDblClickOnCell(i, j, grid, setGrid, setDynamicGrid) {
+  if (isBlock(i, j, grid)) {
+    setGrid(updateCellValue(i, j, 0, grid));
+    setDynamicGrid(updateCellValue(i, j, 0, grid));
+  } else {
+    setGrid(addBlock(i, j, grid));
+    setDynamicGrid(addBlock(i, j, grid));
+  }
+}

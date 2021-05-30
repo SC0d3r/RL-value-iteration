@@ -45,7 +45,7 @@ export function addBlock(i, j, grid) {
   return updateCellValue(i, j, BLOCK, grid);
 }
 
-function isBlock(i, j, grid) {
+export function isBlock(i, j, grid) {
   return getCellValue(i, j, grid) === BLOCK;
 }
 export function isValueBlock(value) {
@@ -192,7 +192,7 @@ function nextCell(i, j, [x, y]) {
   return [i, j + 1];
 }
 
-function updateCellValue(i, j, newValue, grid) {
+export function updateCellValue(i, j, newValue, grid) {
   const newGrid = R.clone(grid);
   newGrid[i][j] = newValue;
   return newGrid;

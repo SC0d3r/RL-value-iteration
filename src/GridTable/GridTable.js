@@ -2,8 +2,7 @@ import { sizeOfGrid, getCellValue, isValueBlock } from "../logic";
 import styles from "./GridTable.module.css";
 import { Grid, isWidthDown, Typography, withWidth } from "@material-ui/core";
 
-function GridTable({ grid, justify = "flex-start", width }) {
-  console.log(width);
+function GridTable({ grid, justify = "flex-start", width, onDoubleClickCell }) {
   return (
     <Grid
       container
@@ -12,7 +11,7 @@ function GridTable({ grid, justify = "flex-start", width }) {
       justify="center"
       style={{ padding: "2rem" }}
     >
-      {grid.map((x) => (
+      {grid.map((x, i) => (
         <Grid
           style={{ width: isWidthDown("xs", width) ? "fit-content" : "none" }}
           key={Math.random()}
@@ -21,9 +20,10 @@ function GridTable({ grid, justify = "flex-start", width }) {
           justify={justify}
           direction="row"
         >
-          {x.map((y) =>
+          {x.map((y, j) =>
             !isValueBlock(y) ? (
               <Grid
+                onDoubleClick={(e) => onDoubleClickCell(i, j)}
                 alignItems="center"
                 justify="center"
                 key={Math.random()}
@@ -41,6 +41,7 @@ function GridTable({ grid, justify = "flex-start", width }) {
               </Grid>
             ) : (
               <Grid
+                onDoubleClick={(e) => onDoubleClickCell(i, j)}
                 item
                 className={styles.cell}
                 style={{ background: "rgba(0,0,0,0.7)" }}
