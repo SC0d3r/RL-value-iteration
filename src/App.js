@@ -82,7 +82,9 @@ function App() {
         >
           <Grid
             item
-            xs={2}
+            xs={4}
+            md={2}
+            sm={2}
             container
             direction="row"
             alignItems="center"
@@ -111,7 +113,9 @@ function App() {
 
           <Grid
             item
-            xs={2}
+            xs={4}
+            md={2}
+            sm={2}
             container
             direction="row"
             alignItems="center"
