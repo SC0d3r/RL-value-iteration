@@ -55,19 +55,19 @@ function getTerminalStates(grid) {
   return grid.terminalStates || [];
 }
 
-export function step(R, gamma, T, grid, i = 0, j = 0) {
+export function step(R, gamma, T, grid, i = 0, j = 0, resultGrid = grid) {
   if (i === sizeOfGrid(grid)[0]) {
-    return grid;
+    return resultGrid;
   }
   const [nextI, nextJ] = nextCell(i, j, sizeOfGrid(grid));
   if (isTerminalState(i, j, grid) || isBlock(i, j, grid)) {
-    return step(R, gamma, T, grid, nextI, nextJ);
+    return step(R, gamma, T, grid, nextI, nextJ, resultGrid);
   }
 
   const allValues = calculateAllValuesForCell(i, j, grid, R, gamma, T);
   const bestValue = Math.max(...allValues);
-  const newGrid = updateCellValue(i, j, bestValue, grid);
-  return step(R, gamma, T, newGrid, nextI, nextJ);
+  const newGrid = updateCellValue(i, j, bestValue, resultGrid);
+  return step(R, gamma, T, grid, nextI, nextJ, newGrid);
 }
 
 export function algorithm(
