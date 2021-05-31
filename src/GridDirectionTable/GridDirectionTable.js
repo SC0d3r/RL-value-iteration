@@ -3,12 +3,14 @@ import {
   getDirection,
   DIRECTIONS,
   isTerminalState,
+  getCellValue,
 } from "../logic";
 import styles from "./GridDirectionTable.module.css";
 import { Grid, isWidthDown, Typography, withWidth } from "@material-ui/core";
 
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import CheckIcon from "@material-ui/icons/Check";
+import RemoveIcon from "@material-ui/icons/Remove";
 
 function GridDirectionTable({ grid, justify = "flex-start", width }) {
   return (
@@ -45,7 +47,18 @@ function GridDirectionTable({ grid, justify = "flex-start", width }) {
                     fontSize: "calc(0.5rem + 5px)",
                   }}
                 >
-                  {isTerminalState(i, j, grid) ? (
+                  {isTerminalState(i, j, grid) &&
+                  getCellValue(i, j, grid) < 0 ? (
+                    <RemoveIcon
+                      style={{
+                        color: "red",
+                        fontWeight: "bold",
+                        position: "relative",
+                        bottom: "2px",
+                      }}
+                    />
+                  ) : isTerminalState(i, j, grid) &&
+                    getCellValue(i, j, grid) >= 0 ? (
                     <CheckIcon style={{ color: "green" }} />
                   ) : DIRECTIONS.LEFT === getDirection(i, j, grid) ? (
                     <ArrowBackIcon style={{ color: "rgba(3,2,255,0.9)" }} />
