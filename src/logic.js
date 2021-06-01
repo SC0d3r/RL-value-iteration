@@ -87,6 +87,7 @@ export function getDirection(i, j, grid) {
   const { up, down, left, right } = getNeighborValues(
     i,
     j,
+    0, //R
     grid,
     Number.MIN_SAFE_INTEGER
   );
@@ -116,7 +117,14 @@ function isValidNeighbor(i, j, grid) {
   return !isBlock(i, j, grid) && isValidCoordForCell(i, j, sizeOfGrid(grid));
 }
 
-function getNeighborValues(i, j, grid, defaultCellValue = 0) {
+function getNeighborValues(
+  i,
+  j,
+  R,
+  grid,
+  defaultCellValue = 0,
+  valueForTerminal = undefined
+) {
   const upCellValue = isValidNeighbor(i - 1, j, grid)
     ? getCellValue(i - 1, j, grid)
     : defaultCellValue;
@@ -131,53 +139,95 @@ function getNeighborValues(i, j, grid, defaultCellValue = 0) {
     : defaultCellValue;
 
   return {
-    up: upCellValue,
-    left: leftCellValue,
-    right: rightCellValue,
-    down: bottomCellValue,
+    up: isTerminalState(i - 1, j, grid)
+      ? valueForTerminal === 0
+        ? valueForTerminal
+        : getCellValue(i - 1, j, grid) === 1
+        ? 1
+        : -1
+      : upCellValue,
+    rewardUP: isTerminalState(i - 1, j, grid)
+      ? getCellValue(i - 1, j, grid) === 1
+        ? 1
+        : -1
+      : R,
+    left: isTerminalState(i, j - 1, grid)
+      ? valueForTerminal === 0
+        ? valueForTerminal
+        : getCellValue(i, j - 1, grid) === 1
+        ? 1
+        : -1
+      : leftCellValue,
+    rewardLeft: isTerminalState(i, j - 1, grid)
+      ? getCellValue(i, j - 1, grid) === 1
+        ? 1
+        : -1
+      : R,
+    right: isTerminalState(i, j + 1, grid)
+      ? valueForTerminal === 0
+        ? valueForTerminal
+        : getCellValue(i, j + 1, grid) === 1
+        ? 1
+        : -1
+      : rightCellValue,
+    rewardRight: isTerminalState(i, j + 1, grid)
+      ? getCellValue(i, j + 1, grid) === 1
+        ? 1
+        : -1
+      : R,
+    down: isTerminalState(i + 1, j, grid)
+      ? valueForTerminal === 0
+        ? valueForTerminal
+        : getCellValue(i + 1, j, grid) === 1
+        ? 1
+        : -1
+      : bottomCellValue,
+    rewardDown: isTerminalState(i + 1, j, grid)
+      ? getCellValue(i + 1, j, grid) === 1
+        ? 1
+        : -1
+      : R,
   };
 }
 
 function calculateAllValuesForCell(i, j, grid, R, gamma, T) {
   const thisCellValue = getCellValue(i, j, grid);
 
-  const upCellValue = isValidNeighbor(i - 1, j, grid)
-    ? getCellValue(i - 1, j, grid)
-    : thisCellValue;
-  const rightCellValue = isValidNeighbor(i, j + 1, grid)
-    ? getCellValue(i, j + 1, grid)
-    : thisCellValue;
-  const leftCellValue = isValidNeighbor(i, j - 1, grid)
-    ? getCellValue(i, j - 1, grid)
-    : thisCellValue;
-  const bottomCellValue = isValidNeighbor(i + 1, j, grid)
-    ? getCellValue(i + 1, j, grid)
-    : thisCellValue;
+  const {
+    up,
+    down,
+    left,
+    right,
+    rewardDown,
+    rewardLeft,
+    rewardRight,
+    rewardUP,
+  } = getNeighborValues(i, j, R, grid, 0, 0);
 
   const result = [];
 
   result.push(
-    0.8 * (R + gamma * upCellValue) +
-      0.1 * (R + gamma * rightCellValue) +
-      0.1 * (R + gamma * leftCellValue)
+    0.8 * (rewardUP + gamma * up) +
+      0.1 * (rewardRight + gamma * right) +
+      0.1 * (rewardLeft + gamma * left)
   );
 
   result.push(
-    0.8 * (R + gamma * bottomCellValue) +
-      0.1 * (R + gamma * rightCellValue) +
-      0.1 * (R + gamma * leftCellValue)
+    0.8 * (rewardDown + gamma * down) +
+      0.1 * (rewardRight + gamma * right) +
+      0.1 * (rewardLeft + gamma * left)
   );
 
   result.push(
-    0.8 * (R + gamma * rightCellValue) +
-      0.1 * (R + gamma * upCellValue) +
-      0.1 * (R + gamma * bottomCellValue)
+    0.8 * (rewardRight + gamma * right) +
+      0.1 * (rewardUP + gamma * up) +
+      0.1 * (rewardDown + gamma * down)
   );
 
   result.push(
-    0.8 * (R + gamma * leftCellValue) +
-      0.1 * (R + gamma * upCellValue) +
-      0.1 * (R + gamma * bottomCellValue)
+    0.8 * (rewardLeft + gamma * left) +
+      0.1 * (rewardUP + gamma * up) +
+      0.1 * (rewardDown + gamma * down)
   );
   return result;
 }

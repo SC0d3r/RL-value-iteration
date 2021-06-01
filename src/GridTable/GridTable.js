@@ -56,7 +56,7 @@ function GridTable({ grid, justify = "flex-start", width, onDoubleClickCell }) {
 
 function showNumber(x) {
   if (hasTwoZeroDecimals(x)) return x.toExponential(2);
-  return parseFloat(x).toFixed(2);
+  return parseFloat(x).toFixed(3);
 }
 function hasTwoZeroDecimals(x) {
   let z = x.toString();
